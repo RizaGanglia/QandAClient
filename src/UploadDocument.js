@@ -21,7 +21,7 @@ const UploadDocument = () => {
     formData.append('file', file);  // Correctly append the file
   
     try {
-      const response = await axios.post('http://localhost:3001/uploads', formData, {
+      const response = await axios.post('https://qandaserver.onrender.com/uploads', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
