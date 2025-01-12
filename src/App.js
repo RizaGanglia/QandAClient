@@ -10,46 +10,34 @@ function App() {
 
   const handleAskQuestion = async (question) => {
     try {
-      setAnswer("");
-      setLoading(true);
-  
+      setAnswer('')
+      setLoading(true)
       const response = await axios.post("https://qandaserver.onrender.com/ask", {
         question,
-        documentContent: localStorage.getItem("documentContent"),
+        documentContent: localStorage.getItem("documentContent"), // Store documentContent in localStorage
       });
-  
       console.log(response.data, "response");
       if (response.data?.answers && response.data.answers.length > 0) {
-        setLoading(false);
-  
-        // Extract the relevant part of the answer
-        const relevantAnswer = response.data.answers
-          .map((item) => {
-            if (item.answer?.candidates) {
-              return item.answer.candidates
-                .map((candidate) =>
-                  candidate.content?.parts
-                    ?.map((part) => part.text)
-                    .join("")
-                    .split(".")[0] // Take the first sentence
-                )
-                .join("");
-            }
-            return null;
-          })
-          .filter(Boolean) // Remove null values
-          .find((ans) => ans.includes("The price of Widget A is")); // Find the most relevant part
-  
-        setAnswer(relevantAnswer || "No clear answer found.");
-      } else {
-        setAnswer("No answer found.");
+        setLoading(false)
+        // Extract the text from each answer
+        const answers = response.data.answers.map((item) => {
+          if (item.answer?.candidates) {
+            return item.answer.candidates
+              .map(candidate => candidate.content?.parts?.map(part => part.text).join(''))
+              .join('') || 'No answer text available';
+          }
+          return 'No candidates available';
+        });
+        setAnswer(answers.join('')); 
+
       }
+        // Join all answers and display the first one (assuming you want the first result)
+      // setAnswer(response.data.answers[0].answer);
     } catch (error) {
       console.error("Error:", error);
       setAnswer("Error processing your request.");
     }
   };
-  
   
 
   return (
